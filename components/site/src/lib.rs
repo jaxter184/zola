@@ -862,7 +862,7 @@ impl Site {
             }
             None => "index.html",
         };
-        let content = render_redirect_template(permalink, &self.tera)?;
+        let content = render_redirect_template(permalink, &self.tera, &self.config)?;
         self.write_content(&split, page_name, content)?;
         Ok(())
     }
@@ -1118,7 +1118,7 @@ impl Site {
             self.write_content(
                 &components,
                 "index.html",
-                render_redirect_template(&permalink, &self.tera)?,
+                render_redirect_template(&permalink, &self.tera, &self.config)?,
             )?;
 
             return Ok(());
@@ -1191,7 +1191,7 @@ impl Site {
                     self.write_content(
                         &pager_components,
                         "index.html",
-                        render_redirect_template(&paginator.permalink, &self.tera)?,
+                        render_redirect_template(&paginator.permalink, &self.tera, &self.config)?,
                     )?;
                 }
 

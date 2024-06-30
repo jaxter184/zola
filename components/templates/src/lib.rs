@@ -8,7 +8,7 @@ use libs::once_cell::sync::Lazy;
 use libs::tera::{Context, Tera};
 
 use errors::{bail, Context as ErrorContext, Result};
-use utils::templates::rewrite_theme_paths;
+use utils::templates::{rewrite_theme_paths, render_template};
 
 pub static ZOLA_TERA: Lazy<Tera> = Lazy::new(|| {
     let mut tera = Tera::default();
@@ -23,7 +23,7 @@ pub static ZOLA_TERA: Lazy<Tera> = Lazy::new(|| {
             include_str!("builtins/split_sitemap_index.xml"),
         ),
         ("__zola_builtins/anchor-link.html", include_str!("builtins/anchor-link.html")),
-        ("internal/alias.html", include_str!("builtins/internal/alias.html")),
+        ("__zola_builtins/alias.html", include_str!("builtins/alias.html")),
     ])
     .unwrap();
     tera.register_filter("base64_encode", filters::base64_encode);
@@ -34,11 +34,11 @@ pub static ZOLA_TERA: Lazy<Tera> = Lazy::new(|| {
 
 /// Renders the `internal/alias.html` template that will redirect
 /// via refresh to the url given
-pub fn render_redirect_template(url: &str, tera: &Tera) -> Result<String> {
+pub fn render_redirect_template(url: &str, tera: &Tera, config: &Config) -> Result<String> {
     let mut context = Context::new();
     context.insert("url", &url);
 
-    tera.render("internal/alias.html", &context)
+    render_template("alias.html", tera, context, &config.theme)
         .with_context(|| format!("Failed to render alias for '{}'", url))
 }
 
